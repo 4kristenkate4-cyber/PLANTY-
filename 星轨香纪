@@ -1,0 +1,771 @@
+```react
+import React, { useState } from 'react';
+import { Sparkles, Compass, Eye, Heart, Moon, Sun, Wind, Shield, BookOpen, Layers, Edit3, Check, Download, RefreshCw, EyeOff } from 'lucide-react';
+
+// ==================== 1. 设计数据定义 ====================
+const SCENTS_DATA = {
+  rose: {
+    id: 'rose',
+    name: '玫瑰',
+    engName: 'Rose',
+    planet: '金星',
+    planetEng: 'Venus',
+    symbol: '♀',
+    color: '#E11D48',
+    bgGradient: 'from-rose-950 to-stone-950',
+    element: '水元素',
+    chakra: '心轮 (Heart)',
+    magicAttr: '无条件爱 / 自我接纳 / 魅力吸引 / 阴性守护',
+    invocation: '“借由金星的玫瑰，我向宇宙敞开心扉。我本丰盛，亦被爱环绕。”',
+    description: '采用保加利亚大马士革玫瑰与珍稀粉红花瓣手搓而成。金星是爱与美的象征，玫瑰微甜且带着绿意的花香，能够温柔抚平心轮创伤，唤醒最本源的神圣阴性魅力。',
+    flowerDoodle: (
+      <path d="M120,380 C110,360,130,350,140,360 C150,350,170,360,160,380 C170,400,150,420,140,410 C130,420,110,400,120,380 Z M130,375 C135,370,145,370,150,375 C145,385,135,385,130,375 Z M140,410 C140,430,130,450,110,460 M140,425 C150,435,160,430,170,420" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+    ),
+    planetIllustration: (
+      <g>
+        {/* Venus Symbol Art */}
+        <circle cx="140" cy="245" r="28" stroke="currentColor" strokeWidth="2" fill="none" />
+        <line x1="140" y1="273" x2="140" y2="305" stroke="currentColor" strokeWidth="2" />
+        <line x1="125" y1="288" x2="155" y2="288" stroke="currentColor" strokeWidth="2" />
+        {/* Surrounding botanical/star frame */}
+        <path d="M90,245 C90,210,110,195,140,195 C170,195,190,210,190,245 C190,280,170,295,140,295" stroke="currentColor" strokeWidth="1" strokeDasharray="3,3" fill="none" />
+        {/* Small stars */}
+        <path d="M100,210 L102,215 L107,215 L103,218 L105,223 L100,220 L95,223 L97,218 L93,215 L98,215 Z" fill="currentColor" opacity="0.8" transform="scale(0.8) translate(30, 40)" />
+        <path d="M100,210 L102,215 L107,215 L103,218 L105,223 L100,220 L95,223 L97,218 L93,215 L98,215 Z" fill="currentColor" opacity="0.8" transform="scale(0.6) translate(140, 90)" />
+      </g>
+    )
+  },
+  green_tea: {
+    id: 'green_tea',
+    name: '绿茶',
+    engName: 'Green Tea',
+    planet: '水星',
+    planetEng: 'Mercury',
+    symbol: '☿',
+    color: '#059669',
+    bgGradient: 'from-emerald-950 to-stone-950',
+    element: '风元素',
+    chakra: '喉轮 (Throat)',
+    magicAttr: '思绪澄清 / 逻辑记忆 / 沟通顺畅 / 灵感流动',
+    invocation: '“水星的飞翼掠过重雾，带走杂乱思绪。灵感在此汇聚，声音因真实而自由。”',
+    description: '精选高山明前春茶与天然粘粉纯手工调制。水星主宰心智与传达。绿茶高雅清逸的香气可瞬间净化脑内噪点，在阅读、书写或占卜仪式前点燃，能够搭建清晰的意识桥梁。',
+    flowerDoodle: (
+      <path d="M110,400 C115,380,135,370,140,390 C145,370,165,380,170,400 C150,420,130,420,110,400 Z M140,390 L140,440 M125,410 C130,405,135,405,140,410 M155,420 C150,415,145,415,140,420" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+    ),
+    planetIllustration: (
+      <g>
+        {/* Mercury Symbol Art */}
+        <circle cx="140" cy="245" r="22" stroke="currentColor" strokeWidth="2" fill="none" />
+        <line x1="140" y1="267" x2="140" y2="299" stroke="currentColor" strokeWidth="2" />
+        <line x1="128" y1="283" x2="152" y2="283" stroke="currentColor" strokeWidth="2" />
+        {/* Horns / Crescent on top */}
+        <path d="M123,213 C128,223,152,223,157,213" stroke="currentColor" strokeWidth="2" fill="none" />
+        {/* Caduceus snake-like orbits */}
+        <path d="M115,245 Q125,225,140,225 T165,245 Q155,265,140,265 T115,245" stroke="currentColor" strokeWidth="1" strokeDasharray="2,2" fill="none" />
+        {/* Geometric diamond background */}
+        <polygon points="140,195 180,245 140,295 100,245" stroke="currentColor" strokeWidth="0.8" strokeDasharray="4,4" fill="none" />
+      </g>
+    )
+  },
+  jasmine: {
+    id: 'jasmine',
+    name: '茉莉',
+    engName: 'Jasmine',
+    planet: '月亮',
+    planetEng: 'Moon',
+    symbol: '☽',
+    color: '#D97706',
+    bgGradient: 'from-amber-950 to-stone-950',
+    element: '水元素',
+    chakra: '眉心轮 (Third Eye)',
+    magicAttr: '直觉苏醒 / 情绪疗愈 / 梦境旅行 / 神圣阴性',
+    invocation: '“如月华如练，夜莺歌唱。黑暗不再令我畏惧，直觉已成为我的明灯。”',
+    description: '采用夜间静谧采摘的伏天茉莉花骨朵。月亮掌管情感的潮汐与我们深邃的无意识之海。茉莉“夜之女王”的纯白香气，最适宜在入夜、冥想与睡眠前点燃，是接纳月相力量的法器。',
+    flowerDoodle: (
+      <path d="M130,370 C140,360,150,360,160,370 C170,380,160,390,150,390 C140,390,130,380,130,370 Z M120,390 C130,385,135,395,140,405 C130,415,120,405,120,390 Z M140,405 L140,450" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+    ),
+    planetIllustration: (
+      <g>
+        {/* Moon / Crescent Art */}
+        <path d="M125,215 C155,215,165,235,165,255 C165,275,155,295,125,295 C145,290,150,270,150,255 C150,240,145,220,125,215 Z" stroke="currentColor" strokeWidth="2" fill="currentColor" fillOpacity="0.1" />
+        {/* Star & Moon aura */}
+        <circle cx="145" cy="255" r="45" stroke="currentColor" strokeWidth="0.8" strokeDasharray="3,3" fill="none" />
+        <circle cx="145" cy="255" r="48" stroke="currentColor" strokeWidth="0.5" fill="none" />
+        {/* Tiny Stars */}
+        <g transform="translate(110, 230)">
+          <path d="M0,5 L2,7 L7,7 L3,9 L5,14 L0,11 L-5,14 L-3,9 L-7,7 L-2,7 Z" fill="currentColor" />
+        </g>
+      </g>
+    )
+  },
+  osmanthus: {
+    id: 'osmanthus',
+    name: '桂花',
+    engName: 'Osmanthus',
+    planet: '太阳',
+    planetEng: 'Sun',
+    symbol: '☉',
+    color: '#EA580C',
+    bgGradient: 'from-orange-950 to-stone-950',
+    element: '火元素',
+    chakra: '太阳神经丛 (Solar Plexus)',
+    magicAttr: '丰盛显化 / 个人意志 / 自信阳光 / 生命力满格',
+    invocation: '“我是金色的火焰，我是不息的光。让太阳的蜜糖，照亮并显化我内心的渴望。”',
+    description: '选用秋季新鲜黄金桂花与秘鲁香脂。太阳代表无尽的能量、生命力与绝对的主权。桂花明朗、甜蜜且饱满的香气能瞬间驱散内在匮乏感，如同太阳照耀，极为契合财富显化仪式。',
+    flowerDoodle: (
+      <g stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round">
+        <circle cx="140" cy="380" r="5" />
+        <path d="M140,375 C140,365,150,370,140,375 Z M145,380 C155,380,150,390,145,380 Z M140,385 C140,395,130,390,140,385 Z M135,380 C125,380,130,370,135,380 Z" />
+        <path d="M140,395 L140,440" />
+      </g>
+    ),
+    planetIllustration: (
+      <g>
+        {/* Sun Symbol (Circle with point) with rays */}
+        <circle cx="140" cy="245" r="14" stroke="currentColor" strokeWidth="2.5" fill="none" />
+        <circle cx="140" cy="245" r="3" fill="currentColor" />
+        <circle cx="140" cy="245" r="30" stroke="currentColor" strokeWidth="1" strokeDasharray="4,4" fill="none" />
+        
+        {/* Rays */}
+        {[0, 45, 90, 135, 180, 225, 270, 315].map((angle) => (
+          <line
+            key={angle}
+            x1="140"
+            y1="245"
+            x2={140 + Math.cos((angle * Math.PI) / 180) * 42}
+            y2={245 + Math.sin((angle * Math.PI) / 180) * 42}
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+          />
+        ))}
+      </g>
+    )
+  },
+  palo_santo: {
+    id: 'palo_santo',
+    name: '圣木',
+    engName: 'Palo Santo',
+    planet: '土星',
+    planetEng: 'Saturn',
+    symbol: '♄',
+    color: '#4B5563',
+    bgGradient: 'from-slate-900 to-stone-950',
+    element: '地元素',
+    chakra: '海底轮 (Root)',
+    magicAttr: '空间结界 / 强效祛负 / 稳定根基 / 能量保护',
+    invocation: '“尘埃落定，杂念祛除。土星的锁链封锁黑暗，圣木的烟雾守卫我的神圣边界。”',
+    description: '来自南美可持续采伐的野生圣木芯研磨。土星代表时间的试炼、秩序与神圣保护。圣木浑厚、略带奶香与薄荷感的气味是物理和灵性净化的最强王者，帮你筑起阻绝外界侵扰的结界。',
+    flowerDoodle: (
+      <g stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round">
+        <line x1="120" y1="380" x2="160" y2="420" strokeWidth="3" />
+        <line x1="115" y1="395" x2="145" y2="425" strokeWidth="1" />
+        <path d="M140,400 Q155,385,160,370" />
+        <path d="M125,415 Q110,430,120,440" />
+      </g>
+    ),
+    planetIllustration: (
+      <g>
+        {/* Saturn Symbol Art */}
+        <path d="M130,225 L130,275 M120,235 L145,235 M130,275 C145,275,150,255,135,255 C125,255,125,285,142,285" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+        
+        {/* Planet sphere and giant ring */}
+        <ellipse cx="140" cy="255" rx="42" ry="12" stroke="currentColor" strokeWidth="1.5" fill="none" transform="rotate(-15, 140, 255)" />
+        <ellipse cx="140" cy="255" rx="50" ry="16" stroke="currentColor" strokeWidth="0.8" strokeDasharray="3,3" fill="none" transform="rotate(-15, 140, 255)" />
+        <circle cx="140" cy="255" r="24" stroke="currentColor" strokeWidth="1" strokeDasharray="2,2" fill="none" />
+      </g>
+    )
+  },
+  sandalwood: {
+    id: 'sandalwood',
+    name: '檀香',
+    engName: 'Sandalwood',
+    planet: '木星',
+    planetEng: 'Jupiter',
+    symbol: '♃',
+    color: '#7C2D12',
+    bgGradient: 'from-amber-950 to-stone-950',
+    element: '以太元素',
+    chakra: '顶轮 (Crown)',
+    magicAttr: '高维开悟 / 精神成长 / 慷慨富足 / 灵性加持',
+    invocation: '“木星的金光洒满虚空，引领灵魂向上。在纯净的静默中，接纳不尽的智慧与天启。”',
+    description: '甄选极品老山檀香木配以岩兰草。木星代表着无限扩张、高维度的智慧与慷慨富足。老檀木庄严、幽深、具有穿透力的香气能瞬间抚平浮躁，连接顶轮，是打坐冥想与扩张宏大愿景的首选。',
+    flowerDoodle: (
+      <g stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round">
+        <path d="M120,420 C120,380,140,370,140,370 C140,370,160,380,160,420" />
+        <path d="M130,420 C130,395,140,390,140,390 C140,390,150,395,150,420" />
+        <line x1="140" y1="370" x2="140" y2="440" />
+      </g>
+    ),
+    planetIllustration: (
+      <g>
+        {/* Jupiter Symbol Art */}
+        <path d="M123,240 C135,240,145,245,145,260 C145,275,135,280,120,280 M145,230 L145,295 M135,290 L155,290" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+        
+        {/* Sacred Geometry Triangles */}
+        <polygon points="140,200 185,278 95,278" stroke="currentColor" strokeWidth="1" strokeDasharray="4,4" fill="none" />
+        <polygon points="140,298 185,220 95,220" stroke="currentColor" strokeWidth="0.5" strokeDasharray="2,2" fill="none" />
+        <circle cx="140" cy="249" r="40" stroke="currentColor" strokeWidth="0.8" fill="none" />
+      </g>
+    )
+  },
+  lavender: {
+    id: 'lavender',
+    name: '薰衣草',
+    engName: 'Lavender',
+    planet: '火星',
+    planetEng: 'Mars',
+    symbol: '♂',
+    color: '#6D28D9',
+    bgGradient: 'from-purple-950 to-stone-950',
+    element: '火元素',
+    chakra: '三焦/腹轮 (Sacral)',
+    magicAttr: '和平抚慰 / 怒气转化 / 勇气意志 / 行动平衡',
+    invocation: '“熄灭焦躁的战火，将其化作守护之盾。我充满力量，内心亦一片安详。”',
+    description: '采用特级高原薰衣草精油与草本植物，纯手工糅合。火星拥有充沛热烈、爆发式的力量。薰衣草能够巧妙地“平衡与重组”这股火焰，将破坏性的怒气和焦虑转化为专注、平稳的开创性行动力。',
+    flowerDoodle: (
+      <g stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round">
+        <line x1="140" y1="360" x2="140" y2="440" />
+        <circle cx="140" cy="370" r="3.5" fill="currentColor" />
+        <circle cx="134" cy="380" r="3" fill="currentColor" />
+        <circle cx="146" cy="380" r="3" fill="currentColor" />
+        <circle cx="140" cy="392" r="3" fill="currentColor" />
+        <circle cx="135" cy="404" r="2.5" fill="currentColor" />
+        <circle cx="145" cy="404" r="2.5" fill="currentColor" />
+        <circle cx="140" cy="416" r="2" fill="currentColor" />
+      </g>
+    ),
+    planetIllustration: (
+      <g>
+        {/* Mars Symbol Art */}
+        <circle cx="132" cy="258" r="22" stroke="currentColor" strokeWidth="2.5" fill="none" />
+        <line x1="148" y1="242" x2="168" y2="222" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+        <polyline points="152,222 168,222 168,238" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+        
+        {/* Ray Lines representing active heat */}
+        <path d="M102,258 L90,258 M132,288 L132,300 M110,236 L100,226" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+        {/* Outer Ring */}
+        <circle cx="132" cy="258" r="38" stroke="currentColor" strokeWidth="0.8" strokeDasharray="3,3" fill="none" />
+      </g>
+    )
+  }
+};
+
+// ==================== 2. React主程序 ====================
+export default function App() {
+  const [selectedScentId, setSelectedScentId] = useState('rose');
+  const [designTheme, setDesignTheme] = useState('midnight'); // 'midnight' 或 'parchment'
+  const [studioName, setStudioName] = useState('摩根魔法屋');
+  const [studioEngName, setStudioEngName] = useState('MORGANA\'S ATELIER');
+  const [customTagline, setCustomTagline] = useState('As above, so below. 愿宇宙之光加持你的灵性之旅');
+  const [showWireframe, setShowWireframe] = useState(false);
+
+  const activeScent = SCENTS_DATA[selectedScentId];
+
+  // 复制文案
+  const copyText = (text) => {
+    const tempInput = document.createElement('textarea');
+    tempInput.value = text;
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    document.execCommand('copy');
+    document.body.removeChild(tempInput);
+    alert('✨ 成功复制贴纸文案！');
+  };
+
+  // 贴纸样式配置
+  const themeStyles = {
+    midnight: {
+      bg: 'bg-[#0E0D13]',
+      cardBg: 'bg-[#15141C]',
+      textColor: 'text-[#E0CFB3]', // 哑金
+      titleColor: 'text-[#F1E4C3]',
+      accentColor: activeScent.color,
+      borderColor: 'border-[#3D3528]',
+      fillColor: '#F1E4C3',
+      strokeColor: '#D1BF9D',
+      labelBg: 'fill-[#121118] stroke-[#CBB48C]',
+      textDark: 'text-stone-400',
+      tagColor: 'bg-[#25211A] text-[#E0CFB3] border-[#4A3F2C]'
+    },
+    parchment: {
+      bg: 'bg-[#F2EFE9]',
+      cardBg: 'bg-[#EAE4D9]',
+      textColor: 'text-[#4A3B32]', // 炭深褐
+      titleColor: 'text-[#2D1F17]',
+      accentColor: activeScent.color,
+      borderColor: 'border-[#C4B7A5]',
+      fillColor: '#4A3B32',
+      strokeColor: '#5C4A3F',
+      labelBg: 'fill-[#FBF9F6] stroke-[#6E594F]',
+      textDark: 'text-stone-600',
+      tagColor: 'bg-[#E4DDD3] text-[#4A3B32] border-[#C4B7A5]'
+    }
+  };
+
+  const style = themeStyles[designTheme];
+
+  return (
+    <div className={`min-h-screen ${style.bg} ${style.textColor} font-serif transition-colors duration-500 pb-12 p-4 md:p-8`}>
+      
+      {/* 顶部标题区 */}
+      <header className="max-w-7xl mx-auto mb-8 text-center border-b pb-6 border-dashed border-opacity-20 border-current">
+        <div className="flex justify-center items-center gap-2 mb-2">
+          <Sparkles className="w-6 h-6 animate-pulse" style={{ color: activeScent.color }} />
+          <span className="text-xs uppercase tracking-[0.3em] opacity-80">PLANETARY ALCHEMY INCENSE PACKAGING</span>
+          <Sparkles className="w-6 h-6 animate-pulse" style={{ color: activeScent.color }} />
+        </div>
+        <h1 className="text-3xl md:text-5xl font-extrabold tracking-widest my-2 font-serif">
+          「星轨香纪」手工能量线香贴纸生成器
+        </h1>
+        <p className="text-sm max-w-2xl mx-auto opacity-70">
+          专为女性工作室打造，融合神圣几何、古典星图与植物炼金术设计。一键生成印刷贴纸图案及实物三维试管包裹效果。
+        </p>
+      </header>
+
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        {/* ================= 左侧控制面板 (4 cols) ================= */}
+        <div className="lg:col-span-4 space-y-6">
+          
+          {/* A. 品牌工作室自定义 */}
+          <div className={`p-6 rounded-2xl ${style.cardBg} border border-opacity-30 ${style.borderColor} shadow-xl`}>
+            <h2 className="text-lg font-bold mb-4 flex items-center gap-2 border-b border-opacity-10 pb-2 border-current">
+              <Edit3 className="w-5 h-5" /> 1. 品牌身份与工作室自定义
+            </h2>
+            <div className="space-y-4 text-xs">
+              <div>
+                <label className="block mb-1 font-semibold opacity-80">中文工作室名 (Logo用):</label>
+                <input 
+                  type="text" 
+                  value={studioName} 
+                  onChange={(e) => setStudioName(e.target.value)}
+                  className="w-full bg-black bg-opacity-20 border border-opacity-30 border-current rounded px-3 py-2 outline-none focus:border-opacity-100"
+                />
+              </div>
+              <div>
+                <label className="block mb-1 font-semibold opacity-80">英文工作室名 (Sub-Logo):</label>
+                <input 
+                  type="text" 
+                  value={studioEngName} 
+                  onChange={(e) => setStudioEngName(e.target.value)}
+                  className="w-full bg-black bg-opacity-20 border border-opacity-30 border-current rounded px-3 py-2 outline-none focus:border-opacity-100"
+                />
+              </div>
+              <div>
+                <label className="block mb-1 font-semibold opacity-80">外盒/说明书魔法寄语 (Tagline):</label>
+                <textarea 
+                  rows="2"
+                  value={customTagline} 
+                  onChange={(e) => setCustomTagline(e.target.value)}
+                  className="w-full bg-black bg-opacity-20 border border-opacity-30 border-current rounded px-3 py-2 outline-none focus:border-opacity-100 resize-none"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* B. 选择香型 (7款香) */}
+          <div className={`p-6 rounded-2xl ${style.cardBg} border border-opacity-30 ${style.borderColor} shadow-xl`}>
+            <h2 className="text-lg font-bold mb-4 flex items-center gap-2 border-b border-opacity-10 pb-2 border-current">
+              <Compass className="w-5 h-5" /> 2. 选择能量香型 (古典七星)
+            </h2>
+            <div className="grid grid-cols-2 gap-2">
+              {Object.values(SCENTS_DATA).map((scent) => {
+                const isSelected = selectedScentId === scent.id;
+                return (
+                  <button
+                    key={scent.id}
+                    onClick={() => setSelectedScentId(scent.id)}
+                    className={`flex items-center gap-2 p-3 rounded-xl border text-left transition-all duration-300 relative overflow-hidden ${
+                      isSelected 
+                        ? 'border-opacity-100 font-bold scale-[1.02] shadow-md' 
+                        : 'border-opacity-20 hover:border-opacity-60'
+                    }`}
+                    style={{ borderColor: scent.color, backgroundColor: isSelected ? `${scent.color}15` : 'transparent' }}
+                  >
+                    <span className="text-xl">{scent.symbol}</span>
+                    <div>
+                      <div className="text-sm font-bold flex items-center gap-1">
+                        {scent.name}
+                        {isSelected && <Check className="w-3.5 h-3.5" style={{ color: scent.color }} />}
+                      </div>
+                      <div className="text-[10px] opacity-60 uppercase">{scent.engName} · {scent.planet}</div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* C. 包装材质设定 */}
+          <div className={`p-6 rounded-2xl ${style.cardBg} border border-opacity-30 ${style.borderColor} shadow-xl`}>
+            <h2 className="text-lg font-bold mb-4 flex items-center gap-2 border-b border-opacity-10 pb-2 border-current">
+              <Layers className="w-5 h-5" /> 3. 贴纸印制材质与工艺
+            </h2>
+            <div className="space-y-4">
+              <div>
+                <span className="block text-xs font-semibold mb-2 opacity-80">预设配色模板：</span>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => setDesignTheme('midnight')}
+                    className={`px-3 py-2 rounded-lg text-xs font-bold border transition-all ${
+                      designTheme === 'midnight' ? 'bg-stone-900 border-[#CBB48C] text-[#F1E4C3]' : 'bg-transparent border-stone-700 text-stone-400'
+                    }`}
+                  >
+                    🌙 深空曜夜 (哑金箔)
+                  </button>
+                  <button
+                    onClick={() => setDesignTheme('parchment')}
+                    className={`px-3 py-2 rounded-lg text-xs font-bold border transition-all ${
+                      designTheme === 'parchment' ? 'bg-stone-100 border-[#6E594F] text-[#4A3B32]' : 'bg-transparent border-stone-300 text-stone-500'
+                    }`}
+                  >
+                    📜 羊皮草药 (复古风)
+                  </button>
+                </div>
+              </div>
+
+              <div className="border-t border-dashed border-opacity-10 border-current pt-4">
+                <span className="block text-xs font-semibold mb-1 opacity-80">工作室推荐工艺标准：</span>
+                <ul className="text-[11px] space-y-1 opacity-75 list-disc pl-4">
+                  <li>**基材**：超感哑光艺术触感纸 (120g 不干胶)</li>
+                  <li>**工艺**：3D浮雕冷烫金 (Matte Champagne Gold)</li>
+                  <li>**裁切**：40mm × 120mm 圆角模切，完美适配15ml玻璃管</li>
+                </ul>
+              </div>
+
+              {/* 辅助网格开关 */}
+              <button
+                onClick={() => setShowWireframe(!showWireframe)}
+                className="w-full py-2 border border-dashed border-current border-opacity-30 hover:border-opacity-75 rounded-lg text-xs flex items-center justify-center gap-2 transition-all"
+              >
+                {showWireframe ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                {showWireframe ? '隐藏印刷对齐辅助线' : '显示印刷对齐辅助线'}
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        {/* ================= 中间贴纸细节设计展示 (5 cols) ================= */}
+        <div className="lg:col-span-5 flex flex-col items-center">
+          <div className="w-full text-center mb-4">
+            <span className="text-xs uppercase tracking-widest opacity-60">HIGH-FIDELITY VECTOR STICKER PREVIEW</span>
+            <h3 className="text-xl font-bold mt-1">贴纸印刷矢量源图 (比例: 1:1)</h3>
+          </div>
+
+          {/* 完美的超高精度 SVG 贴纸 */}
+          <div className="relative shadow-2xl rounded-lg overflow-hidden bg-opacity-50 p-2 border border-stone-800 bg-stone-900">
+            <svg
+              id="mystic-sticker-svg"
+              width="280"
+              height="700"
+              viewBox="0 0 280 700"
+              xmlns="http://www.w3.org/2000/svg"
+              className="transition-colors duration-500"
+            >
+              {/* 定义公共滤镜和背景 */}
+              <defs>
+                <style>
+                  {`
+                    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Noto+Serif+SC:wght@300;600&display=swap');
+                    .font-title { font-family: 'Cinzel', 'Noto Serif SC', serif; letter-spacing: 0.15em; }
+                    .font-sub { font-family: 'Cinzel', sans-serif; letter-spacing: 0.2em; }
+                    .font-body { font-family: 'Noto Serif SC', serif; }
+                  `}
+                </style>
+                {/* 羊皮纸纸张质感滤镜 */}
+                <filter id="parchment-texture" x="0%" y="0%" width="100%" height="100%">
+                  <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" result="noise" />
+                  <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.04 0" />
+                  <feBlend mode="multiply" in="SourceGraphic" in2="noise" />
+                </filter>
+              </defs>
+
+              {/* 1. 贴纸底色 */}
+              <rect
+                x="0"
+                y="0"
+                width="280"
+                height="700"
+                rx="12"
+                fill={designTheme === 'midnight' ? '#121118' : '#FBF9F6'}
+                stroke={designTheme === 'midnight' ? '#CBB48C' : '#6E594F'}
+                strokeWidth="2.5"
+                filter={designTheme === 'parchment' ? 'url(#parchment-texture)' : undefined}
+              />
+
+              {/* 2. 印刷边框 (双重细线) */}
+              <rect x="8" y="8" width="264" height="684" rx="8" fill="none" stroke={designTheme === 'midnight' ? '#4A3F2C' : '#C4B7A5'} strokeWidth="1" />
+              <rect x="12" y="12" width="256" height="676" rx="6" fill="none" stroke={designTheme === 'midnight' ? '#CBB48C' : '#6E594F'} strokeWidth="0.8" />
+
+              {/* 角隅神圣几何装饰 */}
+              {/* Top Left */}
+              <line x1="12" y1="28" x2="28" y2="12" stroke={designTheme === 'midnight' ? '#CBB48C' : '#6E594F'} strokeWidth="1" />
+              <circle cx="28" cy="28" r="2" fill={designTheme === 'midnight' ? '#CBB48C' : '#6E594F'} />
+              {/* Top Right */}
+              <line x1="268" y1="28" x2="252" y2="12" stroke={designTheme === 'midnight' ? '#CBB48C' : '#6E594F'} strokeWidth="1" />
+              <circle cx="252" cy="28" r="2" fill={designTheme === 'midnight' ? '#CBB48C' : '#6E594F'} />
+              {/* Bottom Left */}
+              <line x1="12" y1="672" x2="28" y2="688" stroke={designTheme === 'midnight' ? '#CBB48C' : '#6E594F'} strokeWidth="1" />
+              <circle cx="28" cy="672" r="2" fill={designTheme === 'midnight' ? '#CBB48C' : '#6E594F'} />
+              {/* Bottom Right */}
+              <line x1="268" y1="672" x2="252" y2="688" stroke={designTheme === 'midnight' ? '#CBB48C' : '#6E594F'} strokeWidth="1" />
+              <circle cx="252" cy="672" r="2" fill={designTheme === 'midnight' ? '#CBB48C' : '#6E594F'} />
+
+              {/* ================= 区域1: 品牌Logo区 (顶部) ================= */}
+              <g transform="translate(0, 24)">
+                {/* 三相女神弯月 */}
+                <path d="M125,18 C131,18,135,23,135,30 C135,37,131,42,125,42 C129,40,131,35,131,30 C131,25,129,20,125,18 Z" fill={designTheme === 'midnight' ? '#CBB48C' : '#6E594F'} opacity="0.6" />
+                <path d="M155,18 C149,18,145,23,145,30 C145,37,149,42,155,42 C151,40,149,35,149,30 C149,25,151,20,155,18 Z" fill={designTheme === 'midnight' ? '#CBB48C' : '#6E594F'} opacity="0.6" />
+                <circle cx="140" cy="30" r="8" fill="none" stroke={designTheme === 'midnight' ? '#CBB48C' : '#6E594F'} strokeWidth="1.2" />
+
+                {/* 工作室文字 (动态改变) */}
+                <text x="140" y="55" textAnchor="middle" fill={designTheme === 'midnight' ? '#F1E4C3' : '#2D1F17'} fontSize="14" fontWeight="600" className="font-title" letterSpacing="0.1em">
+                  {studioName}
+                </text>
+                <text x="140" y="68" textAnchor="middle" fill={designTheme === 'midnight' ? '#CBB48C' : '#6E594F'} fontSize="7" fontWeight="normal" className="font-sub" letterSpacing="0.2em">
+                  {studioEngName}
+                </text>
+
+                {/* 纤细分割横线 */}
+                <line x1="80" y1="80" x2="200" y2="80" stroke={designTheme === 'midnight' ? '#4A3F2C' : '#C4B7A5'} strokeWidth="0.8" />
+                <polygon points="140,78 143,80 140,82 137,80" fill={designTheme === 'midnight' ? '#CBB48C' : '#6E594F'} />
+              </g>
+
+              {/* ================= 区域2: 核心产品与行星对应区 (中部) ================= */}
+              <g id="planetary-artwork" className="transition-all duration-500" style={{ color: designTheme === 'midnight' ? '#F1E4C3' : '#4A3B32' }}>
+                
+                {/* 魔法香气主名称 */}
+                <text x="140" y="145" textAnchor="middle" fill={designTheme === 'midnight' ? '#F1E4C3' : '#2D1F17'} fontSize="32" fontWeight="700" className="font-title">
+                  {activeScent.name}
+                </text>
+                
+                {/* 英文及行星属性标 */}
+                <text x="140" y="168" textAnchor="middle" fill={designTheme === 'midnight' ? '#CBB48C' : '#6E594F'} fontSize="11" fontWeight="bold" className="font-sub">
+                  - {activeScent.engName} · {activeScent.planetEng} -
+                </text>
+
+                {/* 绘制对应古典星盘插图 */}
+                {activeScent.planetIllustration}
+
+                {/* 辅助轨道线 */}
+                <circle cx="140" cy="245" r="56" stroke={designTheme === 'midnight' ? '#3D3528' : '#D9D2C5'} strokeWidth="0.5" fill="none" />
+                <circle cx="140" cy="245" r="62" stroke={designTheme === 'midnight' ? '#3D3528' : '#D9D2C5'} strokeWidth="0.5" strokeDasharray="5,3" fill="none" />
+
+                {/* 元素与对应脉轮标签 */}
+                <text x="140" y="325" textAnchor="middle" fill={designTheme === 'midnight' ? '#F1E4C3' : '#4A3B32'} fontSize="9" className="font-body" letterSpacing="0.05em">
+                  能量应合：{activeScent.element}  |  脉轮净化：{activeScent.chakra}
+                </text>
+              </g>
+
+              {/* ================= 区域3: 炼金术植物插画区 ================= */}
+              <g id="botanical-artwork" transform="translate(0, -10)" style={{ color: designTheme === 'midnight' ? '#CBB48C' : '#6E594F' }}>
+                <line x1="80" y1="355" x2="200" y2="355" stroke={designTheme === 'midnight' ? '#4A3F2C' : '#C4B7A5'} strokeWidth="0.8" />
+                {activeScent.flowerDoodle}
+                <text x="140" y="445" textAnchor="middle" fill={designTheme === 'midnight' ? '#CBB48C' : '#6E594F'} fontSize="8" fontStyle="italic" className="font-sub">
+                  PLANETARY HERB ALCHEMY
+                </text>
+              </g>
+
+              {/* ================= 区域4: 魔法内核与咒语 (底部) ================= */}
+              <g transform="translate(0, 10)">
+                {/* 虚线分割线 */}
+                <line x1="40" y1="465" x2="240" y2="465" stroke={designTheme === 'midnight' ? '#4A3F2C' : '#C4B7A5'} strokeWidth="1" strokeDasharray="3,3" />
+
+                {/* 能量属性词 */}
+                <rect x="35" y="480" width="210" height="26" rx="4" fill="none" stroke={designTheme === 'midnight' ? '#CBB48C' : '#6E594F'} strokeWidth="0.8" strokeOpacity="0.4" />
+                <text x="140" y="496" textAnchor="middle" fill={designTheme === 'midnight' ? '#F1E4C3' : '#4A3B32'} fontSize="10" fontWeight="bold" className="font-body">
+                  ✨ {activeScent.magicAttr} ✨
+                </text>
+
+                {/* 核心魔法仪式唤醒词 */}
+                <g transform="translate(40, 525)">
+                  <rect x="0" y="0" width="200" height="65" rx="6" fill={designTheme === 'midnight' ? '#181720' : '#F6F3ED'} stroke={designTheme === 'midnight' ? '#322E26' : '#E2DEC6'} strokeWidth="1" />
+                  
+                  {/* 使用外侧状态栏定义的古老唤醒词 */}
+                  <text x="10" y="24" fill={designTheme === 'midnight' ? '#A29580' : '#605046'} fontSize="9" className="font-body">
+                    {activeScent.invocation.slice(1, 12)}
+                  </text>
+                  <text x="10" y="42" fill={designTheme === 'midnight' ? '#A29580' : '#605046'} fontSize="9" className="font-body">
+                    {activeScent.invocation.slice(12, 25)}
+                  </text>
+                  <text x="10" y="58" fill={designTheme === 'midnight' ? '#A29580' : '#605046'} fontSize="9" className="font-body">
+                    {activeScent.invocation.slice(25, -1)}
+                  </text>
+                </g>
+
+                {/* 二维码/生产标准占位 */}
+                <text x="140" y="618" textAnchor="middle" fill={designTheme === 'midnight' ? '#6B665E' : '#9E9486'} fontSize="7" className="font-sub">
+                  100% HANDMADE INCENSE STICKS
+                </text>
+                <text x="140" y="628" textAnchor="middle" fill={designTheme === 'midnight' ? '#6B665E' : '#9E9486'} fontSize="7" className="font-sub">
+                  NET WT. 10G / APPROX. 10 STICKS
+                </text>
+
+                {/* 法阵底纹标志 */}
+                <circle cx="140" cy="655" r="10" stroke={designTheme === 'midnight' ? '#CBB48C' : '#6E594F'} strokeWidth="1" fill="none" strokeOpacity="0.4" />
+                <path d="M140,645 L140,665 M130,655 L150,655" stroke={designTheme === 'midnight' ? '#CBB48C' : '#6E594F'} strokeWidth="0.8" strokeOpacity="0.4" />
+              </g>
+
+              {/* 印刷对齐辅助层(仅开关打开时显示) */}
+              {showWireframe && (
+                <g opacity="0.85">
+                  {/* 四角出血限制线 (3mm) */}
+                  <rect x="0" y="0" width="280" height="700" fill="none" stroke="#EF4444" strokeWidth="2" strokeDasharray="5,5" />
+                  {/* 中央垂直轴线 */}
+                  <line x1="140" y1="0" x2="140" y2="700" stroke="#3B82F6" strokeWidth="0.5" strokeDasharray="10,5" />
+                  {/* 主要高度排版定位辅助线 */}
+                  <line x1="0" y1="104" x2="280" y2="104" stroke="#10B981" strokeWidth="0.5" />
+                  <line x1="0" y1="334" x2="280" y2="334" stroke="#10B981" strokeWidth="0.5" />
+                  <line x1="0" y1="465" x2="280" y2="465" stroke="#10B981" strokeWidth="0.5" />
+                  
+                  {/* 提示字 */}
+                  <text x="15" y="45" fill="#EF4444" fontSize="8" fontWeight="bold">【3mm 安全出血边】</text>
+                  <text x="145" y="350" fill="#10B981" fontSize="8">【版心排布上限】</text>
+                  <text x="145" y="480" fill="#10B981" fontSize="8">【印刷防断限】</text>
+                </g>
+              )}
+            </svg>
+          </div>
+
+          <p className="text-xs text-center mt-3 opacity-60">
+            实际印刷尺寸规格：<strong>40mm × 120mm</strong> (圆角R=3mm)
+          </p>
+        </div>
+
+        {/* ================= 右侧3D管装包裹预览与文案 (3 cols) ================= */}
+        <div className="lg:col-span-3 space-y-6">
+          
+          {/* A. 3D试管实物包裹模拟 */}
+          <div className={`p-6 rounded-2xl ${style.cardBg} border border-opacity-30 ${style.borderColor} shadow-xl text-center`}>
+            <h2 className="text-sm font-bold mb-3 flex items-center justify-center gap-1.5">
+              <Eye className="w-4 h-4" /> 包装物包裹形态模拟
+            </h2>
+            
+            {/* 3D玻璃试管模拟图 */}
+            <div className="relative w-full h-80 flex items-center justify-center my-4 bg-stone-950 bg-opacity-40 rounded-xl border border-stone-800 py-6 overflow-hidden">
+              
+              {/* 木塞 */}
+              <div className="absolute top-4 w-12 h-6 bg-amber-800 bg-opacity-90 rounded-t-lg border-b border-amber-950 shadow-md z-10"></div>
+              
+              {/* 玻璃管身 */}
+              <div className="relative w-16 h-72 rounded-b-2xl border border-white border-opacity-20 shadow-inner overflow-hidden flex flex-col justify-between items-center" style={{ background: 'linear-gradient(90deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.2) 20%, rgba(255,255,255,0.05) 40%, rgba(255,255,255,0) 80%)' }}>
+                
+                {/* 内部香薰棒 (不规则手搓香预览) */}
+                <div className="absolute w-2 h-60 bottom-4 bg-stone-800 rounded-full opacity-90 shadow-lg flex flex-col justify-between" style={{ borderLeft: '1px solid #555' }}>
+                  <div className="w-full h-4 bg-stone-900 rounded-t-full"></div>
+                  {/* 手搓节节点缀 */}
+                  <div className="w-2.5 h-2.5 bg-stone-700 -ml-0.5 rounded-full"></div>
+                  <div className="w-2.5 h-2.5 bg-stone-700 -ml-0.5 rounded-full"></div>
+                  <div className="w-2.5 h-2.5 bg-stone-700 -ml-0.5 rounded-full"></div>
+                </div>
+
+                {/* 贴纸贴附模拟 (收窄、带透视和弧度的渐变) */}
+                <div 
+                  className={`absolute w-12 h-44 top-14 transition-all duration-500 rounded-md shadow-lg border border-opacity-40 flex flex-col items-center justify-between py-2 px-1 ${
+                    designTheme === 'midnight' ? 'bg-[#121118] text-[#CBB48C] border-[#CBB48C]' : 'bg-[#FBF9F6] text-[#4A3B32] border-[#6E594F]'
+                  }`}
+                  style={{
+                    boxShadow: 'inset 4px 0 10px rgba(0,0,0,0.5), 4px 5px 12px rgba(0,0,0,0.4)',
+                    background: designTheme === 'midnight' 
+                      ? 'linear-gradient(90deg, #09090c 0%, #121118 30%, #1e1d27 80%, #09090c 100%)' 
+                      : 'linear-gradient(90deg, #ded9ce 0%, #fbf9f6 30%, #fff 80%, #ded9ce 100%)'
+                  }}
+                >
+                  <span className="text-[5px] uppercase font-bold tracking-widest">{studioName}</span>
+                  <div className="flex flex-col items-center">
+                    <span className="text-[12px] font-bold leading-none">{activeScent.name}</span>
+                    <span className="text-[5px] opacity-70 mt-0.5">{activeScent.planet} · {activeScent.planetEng}</span>
+                  </div>
+                  <span className="text-[14px] leading-none mb-1">{activeScent.symbol}</span>
+                  <div className="w-8 border-t border-dotted border-current opacity-40"></div>
+                  <span className="text-[4px] text-center scale-90 opacity-80">{activeScent.magicAttr.split(' / ')[0]}</span>
+                </div>
+
+                {/* 玻璃试管的反光 */}
+                <div className="absolute top-0 right-1 w-2 h-full bg-white opacity-10 rounded-r-2xl pointer-events-none"></div>
+              </div>
+
+            </div>
+
+            <p className="text-[11px] opacity-70 leading-relaxed">
+              <strong>15ml 试管包裹效果：</strong><br />高通透高硼硅试管，搭配进口原木塞，能强效锁香防潮，防止手搓香碎裂。
+            </p>
+          </div>
+
+          {/* B. 香气仪式说明与法术卡片文案 */}
+          <div className={`p-6 rounded-2xl ${style.cardBg} border border-opacity-30 ${style.borderColor} shadow-xl`}>
+            <h2 className="text-sm font-bold mb-3 flex items-center gap-1.5">
+              <BookOpen className="w-4 h-4" /> 能量仪式与法力说明
+            </h2>
+            
+            <div className="space-y-4 text-xs leading-relaxed">
+              <div>
+                <span className="font-bold block text-[11px] opacity-80 mb-1">【星之指引】：</span>
+                <p className="opacity-75">{activeScent.description}</p>
+              </div>
+
+              <div>
+                <span className="font-bold block text-[11px] opacity-80 mb-1">【能量仪式指引】：</span>
+                <p className="opacity-75">
+                  在对应行星守护的时刻（如金星对应星期五，月亮对应星期一），用纯净火源点燃香棒，双手轻握置于心轮，微闭双眼，默念并观想唤醒词三遍，让药草香雾建立守护能量气场。
+                </p>
+              </div>
+
+              <button
+                onClick={() => copyText(`${activeScent.name} (行星: ${activeScent.planet} - ${activeScent.planetEng})\n【能量内核】：${activeScent.magicAttr}\n【唤醒法咒】：${activeScent.invocation}\n${activeScent.description}`)}
+                className="w-full py-2 rounded-xl border text-xs font-bold transition-all flex items-center justify-center gap-2 hover:bg-opacity-10"
+                style={{ borderColor: activeScent.color, color: activeScent.color, backgroundColor: `${activeScent.color}10` }}
+              >
+                <Download className="w-4 h-4" /> 导出卡片文案
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      {/* ================= 底部说明：包装制作落地规格与成本核算 ================= */}
+      <footer className="max-w-7xl mx-auto mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 pt-8 border-t border-dashed border-opacity-20 border-current text-xs">
+        <div className="space-y-2">
+          <h4 className="font-bold text-sm">📐 贴纸印刷设计规范 (打样请以此为准)</h4>
+          <p className="opacity-75 leading-relaxed">
+            * <strong>成品尺寸</strong>：40mm宽 × 120mm高 (或按试管高矮等比微调)。<br />
+            * <strong>出血线</strong>：四周各保留3mm出血，总设计尺寸应为46mm × 126mm。<br />
+            * <strong>建议材质</strong>：120g进口艺术磨砂哑光触感不干胶纸 (自带纹理，极具高档触感)。<br />
+            * <strong>色彩方案</strong>：曜黑底(#121118)或复古白(#FBF9F6)。金线采用冷烫金(哑金)工艺。
+          </p>
+        </div>
+        
+        <div className="space-y-2">
+          <h4 className="font-bold text-sm">💰 单支管装贴纸包装物料预算 (1000个起订)</h4>
+          <p className="opacity-75 leading-relaxed">
+            * <strong>高硼硅玻璃试管</strong>：Φ20mm × 150mm (含实木软木塞) — 约 <strong>¥1.20 / 个</strong>。<br />
+            * <strong>高档艺术纸冷烫金贴纸</strong>：圆角R3 40x120mm — 约 <strong>¥0.45 / 张</strong>。<br />
+            * <strong>管内防潮食品级干燥颗粒</strong>：0.5g/袋 — 约 <strong>¥0.08 / 个</strong>。<br />
+            * <strong>单套综合物料成本：约 ¥1.73 / 套</strong> (手搓香裸香成本未计入)。
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <h4 className="font-bold text-sm">💫 七星神谕礼盒配置标准 (全家福套餐)</h4>
+          <p className="opacity-75 leading-relaxed">
+            * <strong>主外盒</strong>：硬质灰板裱250g哑黑触感纸，封面大面积压凹哑金星盘。<br />
+            * <strong>内部支撑</strong>：黑丝绒高密EVA内衬，开7个试管槽，附赠一尊精美小黄铜香托。<br />
+            * <strong>神谕使用说明卡</strong>：350g触感纸，双面冷烫金工艺，正面手绘七星插图。<br />
+            * <strong>礼盒装包装综合物料成本：约 ¥9.50 - ¥13.50 / 套</strong> (包含贴纸管身)。
+          </p>
+        </div>
+      </footer>
+
+    </div>
+  );
+}
+
+```
+eof
+```
+
+```
